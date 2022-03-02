@@ -16,6 +16,8 @@ export const getUsers = (req, res) => {
 }
 export const postUsers = (req, res) => {
     let user = { ...req.body }
+    console.log("request body")
+    console.log(req.body);
     users.push(user);
     console.log(users);
 
@@ -56,10 +58,11 @@ export const createUser = (req, res) => {
                 };
 
                 users.push(userWithId);
-                console.log(typeof (user))
+                //console.log(typeof (user))
                 return res.status(200).json({
                     success: true,
-                    message: `User successfully created`, id: userId
+                    message: `User successfully created`, id: userId,
+                    data: users
                 });
             }
         });
@@ -106,27 +109,54 @@ export const signinUser = (req, res) => {
 
 
 }
-export const getUser = (req, res) => {
+export const getUserByID = (req, res) => {
     const user = users.find((user) => user.id === req.params.id);
     res.send(user)
 };
-export const getAllUsers = (req, res) => {
-    res.send(users)
-};
+
+// export const getAllUsers = (req, res) => {
+//     res.send(users)
+// };
 
 export const deleteUser = (req, res) => {
-    console.log(`user with id ${req.params.id} has been deleted`);
+    // console.log(`user with id ${req.params.id} has been deleted`);
 
-    users = users.filter((user) => user.id !== req.params.id);
+    users = users.filter((user) => user.id != req.params.id);
+    // let result = users.findIndex((user) => user.id === req.params.id);
+
     res.send("data deleted");
 };
 
 export const updateUser = (req, res) => {
-    console.log("i am here");
-    let user = { ...req.body }
-    users.pop();
-    users.push(user);
-    res.send("data got saved");
+    console.log(users);
+    console.log("update------", req.body)
+    let result = users.findIndex((user) => user.id === req.params.id);
 
+    console.log(result)
+
+    bcrypt.hash(req.body.password, 10, (err, hash) => {
+        if (err) {
+            return res.status(500).json({
+                success: false,
+                message: err.message,
+            });
+        } else {
+            req.body.password = hash;
+            users[result].name = req.body.name;
+            users[result].email = req.body.email;
+            users[result].mobile = req.body.mobile;
+            users[result].password = req.body.password;
+
+        }
+        return res.status(200).json({
+            success: true,
+            message: `Upadte successfully `,
+
+        });
+
+
+
+
+    });
 
 };
