@@ -1,5 +1,6 @@
 import express from 'express';
 import multer from 'multer';
+import { checkAuth } from '../middleware.js'
 
 import { getUsers, createUser, getUserByID, deleteUser, updateUser, signinUser, postUsers } from '../controllers/users.js';
 // console.log(updateUser(null, null));
@@ -14,7 +15,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 router.patch('/update/:id', updateUser);
-router.get('/', getUsers);
+router.get('/', checkAuth, getUsers);
 router.post('/users', postUsers);
 
 router.post('/', upload.single("profilePicture"), createUser);
